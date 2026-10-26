@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nodal-measure-weighted slice neural operator | Yuxi Zhai</title>
+  <meta name="description" content="Finite-element nodal measures for slice aggregation in Transolver. Research resources for stress-field prediction on irregular, variable-geometry shell-joint meshes.">
+  <link rel="canonical" href="https://zedkyx.github.io/papers/nodal-measure/">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <meta property="og:title" content="A nodal-measure-weighted slice neural operator">
+  <meta property="og:description" content="Stress-field prediction on irregular finite-element meshes. Method, results and code.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://zedkyx.github.io/papers/nodal-measure/">
+  <meta property="og:image" content="https://zedkyx.github.io/papers/nodal-measure/assets/physics-attention.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="wordmark" href="../../">Yuxi Zhai</a>
+    <nav aria-label="Main navigation"><a href="../../projects/">Projects</a><a href="https://github.com/zedkyx/transolver">GitHub ↗</a></nav>
+  </header>
+  <main id="main">
+    <section class="hero" aria-labelledby="title">
+      <p class="eyebrow">Scientific machine learning · Research project</p>
+      <h1 id="title">A nodal-measure-weighted slice neural operator on irregular finite-element meshes<span class="subtitle">Stress-field prediction for variable-geometry shell joints</span></h1>
+      <p class="authors">Yuxi Zhai<sup>1</sup>, Kunao Wu<sup>2</sup>, Xin Zhang<sup>2</sup>, Shuo Feng<sup>1</sup>,<br class="desktop-break"> Erqing Lin<sup>1</sup>, Youbiao Chu<sup>2,*</sup> and Bofu Wang<sup>1,*</sup></p>
+      <details class="affiliations"><summary>Affiliations &amp; correspondence</summary><p><sup>1</sup> Shanghai Key Laboratory of Mechanics in Energy Engineering, Shanghai Institute of Applied Mathematics and Mechanics, School of Mechanics and Engineering Science, Shanghai University, Shanghai 200072, China.</p><p><sup>2</sup> The Institute of Xi'an Aerospace Solid Propulsion Technology, Xi'an 710025, China.</p><p><sup>*</sup> Correspondence: <a href="mailto:cyber@mail.ustc.edu.cn">Youbiao Chu</a> · <a href="mailto:bofuwang@shu.edu.cn">Bofu Wang</a></p></details>
+      <div class="actions"><a class="button primary" href="https://github.com/zedkyx/transolver">Explore the code ↗</a><a class="button" href="#results">View results ↓</a><a class="button" href="#resources">Data &amp; resources ↓</a></div>
+      <p class="lead">Bringing local mesh-scale information into learned node-to-slice aggregation.</p>
+    </section>
+
+    <figure class="method-figure">
+      <a href="assets/physics-attention.png" aria-label="Open the method figure at full resolution"><img src="assets/physics-attention.png" width="1202" height="658" alt="Original slice aggregation compared with nodal-measure-weighted aggregation. Node features form slice assignments and value projections; nodal measures weight aggregation, while slice self-attention and deslicing remain unchanged."></a>
+      <figcaption>The nodal measure weights node-to-slice aggregation together with the learned slice assignments. Slice self-attention and reconstruction at the nodes remain unchanged. Click to enlarge.</figcaption>
+    </figure>
+
+    <section class="content-section" id="abstract">
+      <p class="eyebrow">Overview</p><h2>Abstract</h2>
+      <p>Nonuniform finite-element meshes give densely sampled regions greater influence in nodal aggregation and error evaluation. Here we investigate nodal-measure-weighted aggregation in Transolver, which compresses nodal features into learned slice representations before applying attention. We construct equal-share and incidence-averaged measures from element areas and connectivity, retaining the area-conserving equal-share measure for evaluation. For stress prediction in variable-geometry shell joints, the incidence-averaged model measure yields lower mean errors than the equal-share alternative, with larger improvements in high-stress regions. Weighting slice aggregation alone reduces mean full-field area-weighted errors for von Mises and maximum principal stress by 4.2% and 3.8%, and high-stress-region errors by 6.1% and 8.3%, while pointwise errors remain largely unchanged. Slice weighting also improves area-weighted accuracy when normalization and loss weighting are enabled. These results support incorporating local mesh-scale information into learned aggregation for stress-field prediction on irregular meshes.</p>
+    </section>
+
+    <section class="content-section" id="method">
+      <p class="eyebrow">Method</p><h2>Two measures, one evaluation standard</h2>
+      <div class="measure-grid">
+        <article><span class="tag">ES</span><h3>Equal-share nodal measure</h3><p>Each element distributes its area equally among its nodes. Summing the contributions at each node preserves the total mesh area.</p><p class="role">Used as the common area measure for evaluation.</p></article>
+        <article><span class="tag">IA</span><h3>Incidence-averaged nodal measure</h3><p>Dividing the ES measure by the number of incident elements gives the average contribution per incident element, describing the local mesh scale.</p><p class="role">Used as the model measure in the pathway ablations.</p></article>
+      </div>
+      <figure class="method-figure measure-figure">
+        <a href="assets/nodal-measures.png" aria-label="Open the ES and IA comparison at full resolution"><img src="assets/nodal-measures.png" width="1126" height="833" loading="lazy" alt="Nodal area contributions extend from Delaunay triangulation to finite-element connectivity. On a uniform quadrilateral mesh, ES sums incident element shares, giving A, A/2 and A/4 at interior, boundary and corner nodes; IA divides these sums by incidence count, giving A/4 at all three node types."></a>
+        <figcaption>From element areas to nodal measures. ES sums the contributions from incident elements; IA averages them over the incidence count. The uniform quadrilateral mesh illustrates how the two constructions differ at interior, boundary and corner nodes. Click to enlarge.</figcaption>
+      </figure>
+    </section>
+
+    <section class="content-section" id="results">
+      <p class="eyebrow">Experiments</p><h2>Stress-field prediction on irregular meshes</h2>
+      <p>Finite-element solutions are computed on the full axisymmetric shell before extracting the forward-joint learning domain. The network predicts von Mises and maximum principal stress.</p>
+      <dl class="experiment-stats"><div><dt>6,420</dt><dd>finite-element cases</dd></div><div><dt>8 : 1 : 1</dt><dd>train / validation / test</dd></div><div><dt>3 seeds</dt><dd>paired comparisons</dd></div><div><dt>5,000</dt><dd>epochs per model</dd></div></dl>
+      <h3>Choice of model measure</h3>
+      <p>ES and IA are compared with weighting enabled in slice aggregation, normalization and the training loss. IA yields lower mean errors, with larger relative improvements in high-stress regions.</p>
+      <div class="table-scroll" role="region" aria-label="Model-measure results, scroll horizontally on small screens" tabindex="0"><table>
+        <caption>Area-weighted relative L2 errors ↓</caption>
+        <thead><tr><th scope="col" rowspan="2">Model measure</th><th scope="colgroup" colspan="2">von Mises</th><th scope="colgroup" colspan="2">Maximum principal</th></tr><tr><th scope="col">Full field</th><th scope="col">HSR</th><th scope="col">Full field</th><th scope="col">HSR</th></tr></thead>
+        <tbody><tr><th scope="row">ES</th><td>.02133 ± .00035</td><td>.01631 ± .00010</td><td>.02636 ± .00028</td><td>.01392 ± .00028</td></tr><tr><th scope="row">IA</th><td><strong>.02091 ± .00068</strong></td><td><strong>.01575 ± .00023</strong></td><td><strong>.02606 ± .00073</strong></td><td><strong>.01317 ± .00025</strong></td></tr></tbody>
+      </table></div>
+      <h3 class="table-heading">Where does weighting help?</h3>
+      <p>The paired comparisons No q → Slice and Norm+Loss → Full isolate the effect of adding slice weighting. Full gives the lowest mean full-field area-weighted errors for both channels; Slice gives the lowest high-stress-region error for von Mises stress.</p>
+      <div class="table-scroll" role="region" aria-label="Weighting-pathway results, scroll horizontally on small screens" tabindex="0"><table>
+        <caption>Area-weighted relative L2 errors ↓</caption>
+        <thead><tr><th scope="col" rowspan="2">Setting</th><th scope="colgroup" colspan="2">von Mises</th><th scope="colgroup" colspan="2">Maximum principal</th></tr><tr><th scope="col">Full field</th><th scope="col">HSR</th><th scope="col">Full field</th><th scope="col">HSR</th></tr></thead>
+        <tbody><tr><th scope="row">No q</th><td>.02316 ± .00151</td><td>.01643 ± .00124</td><td>.02772 ± .00151</td><td>.01465 ± .00133</td></tr><tr><th scope="row">Slice</th><td>.02219 ± .00105</td><td><strong>.01543 ± .00068</strong></td><td>.02667 ± .00124</td><td>.01343 ± .00082</td></tr><tr><th scope="row">Norm+Loss</th><td>.02148 ± .00100</td><td>.01612 ± .00057</td><td>.02640 ± .00095</td><td>.01347 ± .00059</td></tr><tr><th scope="row">Full</th><td><strong>.02091 ± .00068</strong></td><td>.01575 ± .00023</td><td><strong>.02606 ± .00073</strong></td><td><strong>.01317 ± .00025</strong></td></tr></tbody>
+      </table></div>
+      <p class="table-note">Values are means ± sample standard deviations over three training seeds, each evaluated on 642 test cases. All area-weighted evaluations use ES. HSR comprises nodes with reference stress at least 67% of the case maximum for the corresponding channel. Bold indicates the lowest mean in each column within each table. Lower is better.</p>
+      <details class="definitions"><summary>Weighting settings and pointwise evaluation</summary><p><strong>No q:</strong> no nodal weighting. <strong>Slice:</strong> slice aggregation only. <strong>Norm+Loss:</strong> input/output normalization and training loss. <strong>Full:</strong> all three pathways.</p><p>Pointwise errors provide a complementary evaluation. Slice leaves mean full-field pointwise errors largely unchanged relative to No q. Relative to Norm+Loss, Full reduces the four mean area-weighted errors by approximately 1.3–2.7%, while the corresponding pointwise errors increase by 0.1–1.0%.</p></details>
+    </section>
+
+    <section class="content-section resources" id="resources">
+      <p class="eyebrow">Reproduction</p><h2>Code, data &amp; experiment resources</h2>
+      <div class="resource-row"><div><h3>Implementation</h3><p>Model implementations, training and evaluation code.</p></div><a class="button primary" href="https://github.com/zedkyx/transolver">GitHub ↗</a></div>
+      <div class="resource-row"><div><h3>Processed data &amp; preparation files</h3><p>Download links and processing instructions will be added with the dataset release.</p></div><span class="status">Not yet released</span></div>
+      <div class="resource-row"><div><h3>Selected experiment results</h3><p>Paper-aligned configurations, per-seed metrics and selected model checkpoints.</p></div><span class="status">Not yet released</span></div>
+      <p class="resource-note">The tables above summarize the current manuscript. Downloadable experiment artifacts are not yet hosted on this page.</p>
+    </section>
+  </main>
+  <footer><a href="../../">Yuxi Zhai</a><span>Scientific machine learning · Shanghai University</span><a href="#title">Back to top ↑</a></footer>
+</body>
+</html>
