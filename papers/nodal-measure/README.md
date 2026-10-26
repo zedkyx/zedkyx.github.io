@@ -7,7 +7,7 @@ Standalone static page at `/papers/nodal-measure/`. No build step or JavaScript 
 - `assets/physics-attention.png`: rendered from the manuscript's existing mechanism figure.
 - `assets/nodal-measures.png`: rendered from the manuscript's ES/IA comparison figure (`q_measure_quad.pdf`).
 
-The current website repository contains a Next.js static export rather than its source. The English and Chinese About, Projects and CV pages include a Paper / 论文 navigation item in their HTML and route payloads. `site-navigation.js` ensures this standalone page opens through a full document navigation, outside the Next.js route tree. When rebuilding from the original site source, carry over this navigation item and preserve the paper directory; otherwise a new static export may overwrite these integration changes.
+The current website repository contains a Next.js static export rather than its source. The English and Chinese Projects pages link to this paper detail page; it is not a top-level navigation item. Navigation remains About / Projects / CV. `site-navigation.js` ensures project links open this standalone page through a full document navigation, outside the Next.js route tree. When rebuilding from the original site source, preserve the project links and paper directory; otherwise a new static export may overwrite these integration changes.
 
 The GitHub code link is active. Data, checkpoint and paper download links must only be added once their release locations are confirmed. No data or model files are included in this page.
 
